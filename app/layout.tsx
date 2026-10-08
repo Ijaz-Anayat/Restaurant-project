@@ -76,56 +76,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
         <Providers>{children}</Providers>
       </body>
-  },
-  description: site.description,
-  openGraph: {
-    title: `${site.name} — ${site.tagline}`,
-    description: site.description,
-    url: site.url,
-    siteName: site.name,
-    locale: site.locale,
-    type: "website",
-    images: [
-      {
-        url: site.ogImage,
-        width: 1600,
-        height: 1067,
-        alt: "A plated dish in low warm light",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} — ${site.tagline}`,
-    description: site.description,
-    images: [site.ogImage],
-  },
-  alternates: { canonical: "/" },
-};
-
-export const viewport: Viewport = {
-  themeColor: site.colors.charcoal,
-  colorScheme: "dark",
-};
-
-export default function RootLayout({ children }: { children: ReactNode }) {
-  const theme = {
-    "--charcoal": site.colors.charcoal,
-    "--cream": site.colors.cream,
-    "--ember": site.colors.ember,
-    "--gold": site.colors.gold,
-    "--muted": site.colors.muted,
-  } as React.CSSProperties;
-
-  return (
-    <html lang="en" className={`${display.variable} ${sans.variable} h-full antialiased`} style={theme}>
-      <body className="min-h-full bg-charcoal font-sans text-cream">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(getRestaurantJsonLd()) }}
-        />
-        <Providers>{children}</Providers>
-      </body>
     </html>
   );
 }

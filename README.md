@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ember & Oak
 
-## Getting Started
+A cinematic restaurant demo for client presentations. One scrolling home page, plus dedicated menu and reservation routes. Mock data only: no database, auth, or payments.
 
-First, run the development server:
+## Stack
+
+- Next.js 15 (App Router) and TypeScript
+- Tailwind CSS 4, with brand colors as CSS variables
+- three.js, React Three Fiber, Drei, and postprocessing
+- GSAP ScrollTrigger, Lenis, and Framer Motion
+
+## Setup
 
 ```bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Brand
 
-## Learn More
+Change the name, palette, address, hours, chef, and copy in [`lib/site.ts`](lib/site.ts). Color tokens are written onto the document from that file, so the Tailwind theme follows them.
 
-To learn more about Next.js, take a look at the following resources:
+Menu, signatures, testimonials, and gallery copy live in `data/`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Hero photos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Copy and hotspot text live in [`data/hero.ts`](data/hero.ts). Hero colors are CSS variables in [`app/globals.css`](app/globals.css), mapped to Tailwind in [`tailwind.config.ts`](tailwind.config.ts). `heroBurgerMode` lives in [`lib/site.ts`](lib/site.ts) (`"single"` | `"layers"` | `"3d"`).
 
-## Deploy on Vercel
+The demo ships with a stand-in cutout. Replace these files in `public/images/hero/` when you have final art:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| File | Size | Notes |
+| --- | --- | --- |
+| `burger.png` | 1600–2400px wide, transparent PNG or WebP | Shoot or download a stock burger (Pexels or Unsplash), then remove the background with [remove.bg](https://www.remove.bg). The current file is a smaller generated stand-in. |
+| `notebook.png` | about 1200px wide, transparent | Open notebook plus a small burger-and-fries plate. |
+| `avatar-1.jpg`, `avatar-2.jpg` | 256×256 | Two circular portraits. They are cropped with CSS. |
+| `layers/top-bun.png`, `lettuce.png`, `tomato.png`, `cheese.png`, `patty.png`, `bottom-bun.png` | same frame as the burger, transparent | Optional. Set `heroBurgerMode` to `"layers"` only after these exist. Scroll then separates the stack. If a file is missing, the hero falls back to `burger.png`. |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`"3d"` keeps the same text, hotspots, and card. Drop a photoreal GLB later and render it in the persistent canvas inside `HeroBurger`; until then that mode still shows `burger.png`.
+
+## 3D model
+
+The opening hero is a photo composition. The scroll story still uses the procedural plated burger when `public/models` is empty.
+
+To swap in a real dish:
+
+1. Download a CC0 model from [Poly Pizza](https://poly.pizza), [Sketchfab](https://sketchfab.com) (CC0 filter), or [Quaternius](https://quaternius.com).
+2. Compress it with Draco:
+
+```bash
+npx @gltf-transform/cli optimize input.glb public/models/dish.glb --compress draco --texture-compress webp
+```
+
+3. Set `modelPath` to `"/models/dish.glb"` in `lib/site.ts`.
+4. Adjust `modelScale` and `modelRotation` until the dish sits on the pedestal.
+
+The canvas stays mounted across routes and pauses when the hero scrolls away. Postprocessing and extra particles turn off on small screens, when `prefers-reduced-motion` is set, or if the performance monitor steps down. If WebGL is missing, the hero uses a still photograph.
+
+## Deploy
+
+On Vercel, set the project root to `frontend` if this folder is not the repository root. No environment variables are required.
+
+Update `site.url` before launch so canonical URLs, Open Graph, the sitemap, and `robots.txt` point at the real domain.
